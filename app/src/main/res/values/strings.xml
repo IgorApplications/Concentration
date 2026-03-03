@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Концентрация</string>
+    <string name="description_app_name">Сконцентрируйся прмяо сейчас!</string>
+    <string name="plant">Растение</string>
+    <string name="list">Список</string>
+    <string name="statistics">Статистика</string>
+    <string name="calendar">Календарь</string>
+</resources>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/logo2"
+            android:scaleType="centerCrop"/>
+
+    <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="bottom|center"
+            android:src="@drawable/you_tube_logo"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+
+        <TextView
+                android:text="Название задачи:"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="3dp"/>
+
+        <EditText
+                android:id="@+id/mode_ac_name_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dp"
+                android:maxLength="15"
+                android:maxLines="1"
+                android:text="DEFAULT"/>
+
+        <TextView
+                android:text="Время на задачу:"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="3dp"/>
+
+        <RadioGroup
+                android:id="@+id/mode_ac_time_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <RadioButton
+                    android:id="@+id/mode_ac_time_1"
+                    android:text="1 минута"
+                    android:checked="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="3dp"
+                    android:textSize="18sp"/>
+
+            <RadioButton
+                    android:id="@+id/mode_ac_time_2"
+                    android:text="5 минут"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="3dp"
+                    android:textSize="18sp"/>
+            <RadioButton
+                    android:id="@+id/mode_ac_time_3"
+                    android:text="10 минут"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="3dp"
+                    android:textSize="18sp"/>
+
+            <RadioButton
+                    android:id="@+id/mode_ac_time_4"
+                    android:text="30 минут"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="3dp"
+                    android:textSize="18sp"/>
+
+        </RadioGroup>
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="начать"
+                android:textColor="@color/white"
+                android:padding="3dp"
+                android:onClick="goToPlant"/>
+
+    </LinearLayout>
+
+</FrameLayout>
