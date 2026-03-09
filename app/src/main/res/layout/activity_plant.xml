@@ -1,63 +1,298 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rootLayout"
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="#D9D6CE"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/logo2"
-            android:scaleType="centerCrop"/>
+    <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#000"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <LinearLayout
+            android:id="@+id/topProfile"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="20dp"
+            android:padding="6dp"
+            android:background="@drawable/bg_profile_counter"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+                android:id="@+id/profileCount"
+                android:text="0"
+                android:textColor="#FFF"
+                android:textSize="16sp"
+                android:layout_marginEnd="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <ImageView
+                android:src="@drawable/ic_profile"
+                app:tint="#FFF"
+                android:layout_width="18dp"
+                android:layout_height="18dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/backButton">
 
         <LinearLayout
-                android:id="@+id/plant_ac_controller"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
             <TextView
-                    android:id="@+id/plant_ac_name"
-                    android:text="Hello there!"
+                    android:id="@+id/greetings"
+                    android:text="Приветствую, Влад!"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#222"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="3dp"
-                    android:textSize="25sp"/>
+                    android:layout_height="wrap_content"/>
 
             <TextView
-                    android:id="@+id/plant_ac_timer"
-                    android:text="00:00"
+                    android:text="Хорошего дня!"
+                    android:textSize="14sp"
+                    android:textColor="#666"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/holo_red_dark"
-                    android:padding="3dp"
-                    android:textSize="25sp"/>
+                    android:layout_height="wrap_content"/>
 
         </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+            android:id="@+id/timerContainer"
+            android:layout_width="320dp"
+            android:layout_height="320dp"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            app:layout_constraintBottom_toTopOf="@id/startLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <com.iapp.concentration.views.TimerCircleView
+                android:id="@+id/timerCircle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
 
         <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/plant_ac_controller">
+                android:layout_margin="40dp">
 
-            <ImageView
-                    android:id="@+id/imageView"
+            <TextView
+                    android:id="@+id/timerView"
+                    android:text="00:00"
+                    android:layout_margin="3dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/anim_size_0"
-                    android:layout_centerInParent="true"/>
+                    android:layout_height="wrap_content"/>
+
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/timerView">
+
+                <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_size_0_index_2"
+                        android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
+
 
         </RelativeLayout>
 
-    </RelativeLayout>
+    </FrameLayout>
+
+    <LinearLayout
+            android:id="@+id/startLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@id/bottomMenu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="5dp">
+
+        <ImageButton
+                android:id="@+id/startButton"
+                android:layout_width="220dp"
+                android:layout_height="60dp"
+                android:background="@drawable/bg_play"
+                android:src="@drawable/ic_play"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_vertical"
+                app:tint="#FFF"/>
+
+        <ImageButton
+                android:id="@+id/tune"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="5dp"
+                android:src="@drawable/ic_tune"
+                app:tint="#000"/>
+
+    </LinearLayout>
 
 
-    
 
+    <LinearLayout
+            android:id="@+id/bottomMenu"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:background="#E8E6DF"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-</FrameLayout>
+        <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="18dp">
+
+            <ImageButton
+                    android:id="@+id/calendar"
+                    android:src="@drawable/ic_calendar"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="#000"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"/>
+
+            <TextView
+                    android:text="Привычки"
+                    android:textColor="#222"
+                    android:textSize="12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="18dp"
+                android:translationY="-6dp">
+
+            <FrameLayout
+                    android:layout_width="60dp"
+                    android:layout_height="60dp">
+
+                <View
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/bg_home"/>
+
+                <ImageButton
+                        android:id="@+id/home"
+                        android:src="@drawable/ic_home"
+                        app:tint="#FFF"
+                        android:background="@android:color/transparent"
+                        android:layout_gravity="center"
+                        android:layout_width="36dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_height="36dp"/>
+
+            </FrameLayout>
+
+            <TextView
+                    android:text="Главная"
+                    android:textColor="#FFF"
+                    android:textSize="12sp"
+                    android:layout_marginTop="-18dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="18dp">
+
+            <ImageButton
+                    android:id="@+id/list"
+                    android:src="@drawable/ic_list"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="#000"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"/>
+
+            <TextView
+                    android:text="Список дел"
+                    android:textColor="#222"
+                    android:textSize="12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="18dp">
+
+            <ImageButton
+                    android:id="@+id/profile"
+                    android:src="@drawable/ic_profile"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="#000"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"/>
+
+            <TextView
+                    android:text="Профиль"
+                    android:textColor="#222"
+                    android:textSize="12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

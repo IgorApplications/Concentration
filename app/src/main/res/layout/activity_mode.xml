@@ -7,14 +7,12 @@
     <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/logo2"
             android:scaleType="centerCrop"/>
 
     <ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_gravity="bottom|center"
-            android:src="@drawable/you_tube_logo"/>
+            android:layout_gravity="bottom|center"/>
 
     <LinearLayout
             android:layout_width="match_parent"

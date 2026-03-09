@@ -7,9 +7,27 @@
         <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/anim_size_1.xml" value="0.129" />
         <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/anim_size_2.xml" value="0.129" />
         <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/anim_size_3.xml" value="0.129" />
-        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/arrow_back.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/bg_circle_button.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/bg_circle_outline_small.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/bg_filter_outline.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/bg_filter_today.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/bg_home.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/bg_play.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/bg_profile_counter.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/ic_calendar.xml" value="0.152" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/ic_home.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/ic_list.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/ic_pause.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/ic_play.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/ic_plus.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/ic_profile.xml" value="0.129" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/ic_size_0_inedx_0.xml" value="0.115" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/drawable/ic_tune.xml" value="0.108" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/layout/activity_list.xml" value="0.25" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/layout/activity_main.xml" value="0.128" />
         <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/layout/activity_mode.xml" value="0.25" />
-        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/layout/activity_plant.xml" value="0.25" />
+        <entry key="..\:/Data/Normal_archives/Development/JVM/Concentration/app/src/main/res/layout/activity_plant.xml" value="0.2" />
         <entry key="..\:/Test/Concentration/app/src/main/res/layout/activity_main.xml" value="0.2359375" />
       </map>
     </option>
