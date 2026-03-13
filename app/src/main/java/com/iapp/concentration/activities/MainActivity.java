@@ -9,10 +9,7 @@ import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -223,9 +220,14 @@ public class MainActivity extends AppCompatActivity {
         calendarButton.setOnClickListener(bottomButtonsAnimation::accept);
         Context context = this;
         listButton.setOnClickListener(v -> {
+            /*
             MotionLayout motion = findViewById(R.id.bottomMenu);
             motion.transitionToEnd();
             v.postDelayed(() -> startActivity(new Intent(context, ListActivity.class)), 350);
+             */
+
+            Intent intent = new Intent(this, ListActivity.class);
+            startActivity(intent);
         });
         profileButton.setOnClickListener(bottomButtonsAnimation::accept);
 
@@ -257,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void showNameDialog() {
+
         TextView greetingsView = findViewById(R.id.greetings);
 
         String name = sharedPreferences.getString(KeySettings.APPLICATION_NAME, "");
@@ -266,21 +269,38 @@ public class MainActivity extends AppCompatActivity {
         }
 
         EditText editText = new EditText(this);
-        editText.setText("Влад");
+        editText.setHint("Введите имя");
+        editText.setPadding(40,20,40,20);
+        editText.setText("X");
 
-        AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setTitle("Укажите имя")
-                .setMessage("Введите имя, котрое будет отображаться в приложении")
-                .setView(editText)
-                .setPositiveButton("Принять", (dialog, which) -> {
-                    String newName = editText.getText().toString();
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(KeySettings.APPLICATION_NAME, editText.getText().toString());
-                    editor.apply();
-                    greetingsView.setText("Приветствую, " + newName + "!");
-                })
-                .create();
+        LinearLayout container = new LinearLayout(this);
+        container.setPadding(60,20,60,0);
+        container.addView(editText);
 
+        AlertDialog alertDialog =
+                new AlertDialog.Builder(this, R.style.CustomDialog)
+                        .setTitle("Укажите имя")
+                        .setMessage("Введите имя, которое будет отображаться в приложении")
+                        .setView(container)
+                        .setNegativeButton("Отмена", null)
+                        .setPositiveButton("Принять", (dialog, which) -> {
+
+                            String newName = editText.getText().toString().trim();
+
+                            if(newName.isEmpty()){
+                                Toast.makeText(this,"Имя не может быть пустым",Toast.LENGTH_SHORT).show();
+                                showNameDialog();
+                                return;
+                            }
+
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString(KeySettings.APPLICATION_NAME, newName);
+                            editor.apply();
+
+                            greetingsView.setText("Приветствую, " + newName + "!");
+
+                        })
+                        .create();
         alertDialog.show();
     }
 

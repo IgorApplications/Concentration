@@ -11,30 +11,37 @@
     <ConstraintSet android:id="@+id/homeState">
 
         <Constraint
-                android:id="@id/homeCircle"
+
                 android:layout_width="60dp"
                 android:layout_height="60dp"
 
-                motion:layout_constraintTop_toTopOf="@id/motion_layout_2"
-                motion:layout_constraintBottom_toBottomOf="@id/motion_layout_2"
-                motion:layout_constraintStart_toStartOf="@id/motion_layout_2"
-                motion:layout_constraintEnd_toEndOf="@id/motion_layout_2"/>
 
+                motion:layout_constraintTop_toTopOf="parent"
+                motion:layout_constraintBottom_toBottomOf="parent"
+                motion:layout_constraintStart_toStartOf="parent"
+                motion:layout_constraintEnd_toEndOf="parent"
+
+                motion:layout_constraintHorizontal_bias="0.38"/>
     </ConstraintSet>
+    <!-- android:id="@id/homeCircle" -->
 
     <!-- LIST -->
     <ConstraintSet android:id="@+id/listState">
 
         <Constraint
-                android:id="@id/homeCircle"
+
+
+
                 android:layout_width="60dp"
                 android:layout_height="60dp"
 
-                motion:layout_constraintTop_toTopOf="@id/motion_layout_3"
-                motion:layout_constraintBottom_toBottomOf="@id/motion_layout_3"
-                motion:layout_constraintStart_toStartOf="@id/motion_layout_3"
-                motion:layout_constraintEnd_toEndOf="@id/motion_layout_3"/>
+                motion:layout_constraintTop_toTopOf="parent"
+                motion:layout_constraintBottom_toBottomOf="parent"
+                motion:layout_constraintStart_toStartOf="parent"
+                motion:layout_constraintEnd_toEndOf="parent"
 
+                motion:layout_constraintHorizontal_bias="0.62"/>
+        <!-- android:id="@id/homeCircle" -->
     </ConstraintSet>
 
-</MotionScene>
+    </MotionScene>

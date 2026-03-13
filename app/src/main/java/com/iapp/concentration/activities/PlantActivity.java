@@ -4,17 +4,16 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.view.HapticFeedbackConstants;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewAnimationUtils;
+import android.view.*;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
@@ -24,6 +23,7 @@ import com.iapp.concentration.R;
 import com.iapp.concentration.util.KeySettings;
 import com.iapp.concentration.views.TimerCircleView;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class PlantActivity extends AppCompatActivity {
@@ -67,7 +67,6 @@ public class PlantActivity extends AppCompatActivity {
     private long startTime;
 
     private SharedPreferences sharedPreferences;
-    private Runnable onPause;
 
     private TimerCircleView timerCircle;
 
@@ -85,7 +84,7 @@ public class PlantActivity extends AppCompatActivity {
         // --------------------------------------------------------------------------------
 
         // TODO 30 * 1000 replace to 25 * 60 * 1000
-        generalTime = 30 * 1000;
+        generalTime = 30 * 60 * 1000;
 
         timerView = findViewById(R.id.timerView);
         animationObj = findViewById(R.id.imageView);
@@ -98,7 +97,7 @@ public class PlantActivity extends AppCompatActivity {
         updateTimerText(generalTime);
         // -------------------------------------------------------------------------------
 
-        Consumer<View> bottomButtonsAnimation = view -> {
+        BiConsumer<View, Runnable> bottomButtonsAnimation = (view, task) -> {
             view.setPressed(true);
             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
             view.animate().cancel();
@@ -111,7 +110,8 @@ public class PlantActivity extends AppCompatActivity {
                         view.animate()
                                 .scaleX(1f)
                                 .scaleY(1f)
-                                .setDuration(100));
+                                .setDuration(100)
+                                .withEndAction(task));
         };
 
         View.OnTouchListener pressEffect = (v, event) -> {
@@ -202,7 +202,7 @@ public class PlantActivity extends AppCompatActivity {
                     );
         });
 
-        calendarButton.setOnClickListener(bottomButtonsAnimation::accept);
+        calendarButton.setOnClickListener(v -> bottomButtonsAnimation.accept(v, () -> {}));
         homeButton.setOnClickListener(v -> {
             v.setPressed(true);
             v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
@@ -226,9 +226,70 @@ public class PlantActivity extends AppCompatActivity {
                     );
 
         });
-        listButton.setOnClickListener(bottomButtonsAnimation::accept);
-        profileButton.setOnClickListener(bottomButtonsAnimation::accept);
-        tuneButton.setOnClickListener(bottomButtonsAnimation::accept);
+
+        Context context = this;
+        listButton.setOnClickListener(v -> {
+            bottomButtonsAnimation.accept(v, () -> showExitDialog("Выход",
+                    "Вы уверены, что хотите выйти из режима 'Концентрация'?",
+                    (dialog, which) -> {
+                        // IMPORTANT!!!
+                        closeScreen(() -> {
+                            resetTimerState();
+
+                            Intent intent = new Intent(context, ListActivity.class);
+                            startActivity(intent);
+                            myFinish = false;
+
+
+                            overridePendingTransition(
+                                    R.anim.slide_in_right,
+                                    R.anim.slide_out_left
+                            );
+                        });
+                    }
+            ));
+        });
+        profileButton.setOnClickListener(v -> bottomButtonsAnimation.accept(v, () -> {}));
+
+
+        tuneButton.setOnClickListener(v -> bottomButtonsAnimation.accept(v, () -> {
+
+            if (isTimerWork) {
+                Toast.makeText(this, "Таймер уже запущен", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int currentMinutes = (int)(generalTime / 60000);
+
+            com.google.android.material.timepicker.MaterialTimePicker picker =
+                    new com.google.android.material.timepicker.MaterialTimePicker.Builder()
+                            .setTitleText("Выберите время концентрации")
+                            .setTheme(R.style.CustomTimePicker)
+                            .setHour(currentMinutes)
+                            .setMinute(0)
+                            .setTimeFormat(
+                                    com.google.android.material.timepicker.TimeFormat.CLOCK_24H
+                            )
+                            .build();
+
+            picker.addOnPositiveButtonClickListener(dialog -> {
+
+                int minutes = picker.getHour();
+                int seconds = picker.getMinute();
+
+                if (minutes == 0 && seconds == 0) {
+                    Toast.makeText(this, "Должно быть >= 1 секунды", Toast.LENGTH_SHORT).show();
+                }
+
+                generalTime = (minutes * 60L + seconds) * 1000L;
+
+                updateTimerText(generalTime);
+
+            });
+
+            picker.show(getSupportFragmentManager(), "timer_picker");
+
+        }));
 
         LinearLayout profileTop = findViewById(R.id.topProfile);
         profileTop.setOnClickListener(v -> {
@@ -262,6 +323,45 @@ public class PlantActivity extends AppCompatActivity {
             greetingsView.setText("Приветствую, " + name + "!");
             return;
         }
+    }
+
+    private void resetTimerState() {
+
+        handler.removeCallbacksAndMessages(null);
+
+        isTimerWork = false;
+        pauseTimestamp = 0;
+
+        plantLevel = 0;
+        maxPlantLevel = 0;
+        plantHealth = greenStateIndex[0];
+
+        animationObj.setImageResource(
+                plantStates[0][greenStateIndex[0]]
+        );
+
+        timerCircle.setProgress(0f);
+
+        updateTimerText(generalTime);
+    }
+
+
+    private boolean myFinish = false;
+
+    @Override
+    public void finish() {
+        if (myFinish) {
+            super.finish();
+            return;
+        }
+
+        showExitDialog("Выход",
+                "Вы уверены, что хотите выйти из режима 'Концентрация'?",
+                (dialog, which) -> {
+                    // IMPORTANT!!!
+                    closeScreen();
+                }
+        );
     }
 
      private void initScreenAnimation() {
@@ -311,12 +411,44 @@ public class PlantActivity extends AppCompatActivity {
         anim.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                myFinish = true;
                 finish();
             }
         });
 
         anim.start();
     }
+
+    private void closeScreen(Runnable task) {
+
+        View root = findViewById(R.id.rootLayout);
+
+        int cx = root.getWidth()/2;
+        int cy = root.getHeight()/2;
+
+        float initialRadius = (float) Math.hypot(root.getWidth(), root.getHeight());
+
+        Animator anim = ViewAnimationUtils.createCircularReveal(
+                root,
+                cx,
+                cy,
+                initialRadius,
+                0
+        );
+
+        anim.setDuration(400);
+
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                myFinish = true;
+                task.run();
+            }
+        });
+
+        anim.start();
+    }
+
 
     @Override
     protected void onPause() {
@@ -328,14 +460,15 @@ public class PlantActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        if (!isTimerWork) return;
         if(pauseTimestamp == 0) return;
 
         long delta = SystemClock.elapsedRealtime() - pauseTimestamp;
 
         // TODO
-        int degradeSteps = (int)(delta / 100); // каждые 5 секунд
+        int degradeSteps = (int)(delta / 5000); // каждые 5 секунд
 
-        for(int i = 0; i < degradeSteps; i++){
+        for (int i = 0; i < degradeSteps; i++) {
             degradePlant();
         }
 
@@ -353,7 +486,8 @@ public class PlantActivity extends AppCompatActivity {
                 recoverPlant();
 
                 if(plantHealth < greenStateIndex[plantLevel]){
-                    handler.postDelayed(this, 3000);
+                    // TODO
+                    handler.postDelayed(this, 60_000);
                 }
 
             }
@@ -426,7 +560,7 @@ public class PlantActivity extends AppCompatActivity {
 
     private void updatePlantGrowth(float progress){
 
-        // ❗ если растение не зелёное — рост запрещён
+        //  если растение не зелёное — рост запрещён
         if(!isPlantHealthy()){
             return;
         }
@@ -538,10 +672,8 @@ public class PlantActivity extends AppCompatActivity {
                                 .setDuration(500)
                                 .withEndAction(() -> {
 
-                                    animationObj.setImageResource(plantStates[0][2]);
-
                                     updateTimerText(generalTime);
-                                    isTimerWork = false;
+                                    resetTimerState();
 
                                     showMessageDialog("Сообщение", "Время вышло!");
 
@@ -550,10 +682,11 @@ public class PlantActivity extends AppCompatActivity {
     }
 
     private void showMessageDialog(String title, String message) {
+
         if (isFinishing() || isDestroyed()) return;
 
         AlertDialog confirmDialog =
-                new AlertDialog.Builder(this)
+                new AlertDialog.Builder(this, R.style.CustomDialog)
                         .setTitle(title)
                         .setMessage(message)
                         .setPositiveButton("Ясно", (dialog, which) -> {})
@@ -562,13 +695,15 @@ public class PlantActivity extends AppCompatActivity {
     }
 
     private void showExitDialog(String title, String question, DialogInterface.OnClickListener onAccept) {
+
         AlertDialog confirmDialog =
-                new AlertDialog.Builder(this)
+                new AlertDialog.Builder(this, R.style.CustomDialog)
                         .setTitle(title)
                         .setMessage(question)
                         .setNegativeButton("Нет", (dialog, which) -> {})
                         .setPositiveButton("Да", onAccept)
                         .create();
+
         confirmDialog.show();
     }
 }

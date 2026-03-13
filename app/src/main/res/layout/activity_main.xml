@@ -47,7 +47,7 @@
 
         <TextView
                 android:id="@+id/greetings"
-                android:text="Приветствую, Влад!"
+                android:text="Приветствую, X!"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#222"
@@ -213,7 +213,129 @@
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"/>
 
+    <LinearLayout
+            android:id="@+id/bottomMenu"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:background="#E8E6DF"
+            app:layout_constraintBottom_toBottomOf="parent">
 
+        <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="18dp">
+
+            <ImageButton
+                    android:id="@+id/calendar"
+                    android:src="@drawable/ic_calendar"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="#000"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"/>
+
+            <TextView
+                    android:text="Привычки"
+                    android:textColor="#222"
+                    android:textSize="12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="18dp"
+                android:translationY="-6dp">
+
+            <FrameLayout
+                    android:layout_width="60dp"
+                    android:layout_height="60dp">
+
+                <View
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/bg_home"/>
+
+                <ImageButton
+                        android:id="@+id/home"
+                        android:src="@drawable/ic_home"
+                        app:tint="#FFF"
+                        android:background="@android:color/transparent"
+                        android:layout_gravity="center"
+                        android:layout_width="36dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_height="36dp"/>
+
+            </FrameLayout>
+
+            <TextView
+                    android:text="Главная"
+                    android:textColor="#FFF"
+                    android:textSize="12sp"
+                    android:layout_marginTop="-18dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="18dp">
+
+            <ImageButton
+                    android:id="@+id/list"
+                    android:src="@drawable/ic_list"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="#000"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"/>
+
+            <TextView
+                    android:text="Список дел"
+                    android:textColor="#222"
+                    android:textSize="12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="18dp">
+
+            <ImageButton
+                    android:id="@+id/profile"
+                    android:src="@drawable/ic_profile"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="#000"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"/>
+
+            <TextView
+                    android:text="Профиль"
+                    android:textColor="#222"
+                    android:textSize="12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--
     <androidx.constraintlayout.motion.widget.MotionLayout
             android:id="@+id/bottomMenu"
             android:layout_width="match_parent"
@@ -236,6 +358,7 @@
         <LinearLayout
                 android:id="@+id/motion_layout_1"
                 android:orientation="vertical"
+                android:elevation="4dp"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -270,6 +393,7 @@
                 android:id="@+id/motion_layout_2"
                 android:orientation="vertical"
                 android:gravity="center"
+                android:elevation="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
@@ -306,6 +430,7 @@
                 android:id="@+id/motion_layout_3"
                 android:orientation="vertical"
                 android:gravity="center"
+                android:elevation="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
@@ -338,6 +463,7 @@
                 android:id="@+id/motion_layout_4"
                 android:orientation="vertical"
                 android:gravity="center"
+                android:elevation="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
@@ -364,6 +490,6 @@
 
         </LinearLayout>
 
-    </androidx.constraintlayout.motion.widget.MotionLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout> -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
