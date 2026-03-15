@@ -85,6 +85,25 @@
 
     </LinearLayout>
 
+    <TextView
+            android:id="@+id/timerView"
+            android:text="00:00"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/timerContainer"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="3dp"/>
+
     <FrameLayout
             android:id="@+id/timerContainer"
             android:layout_width="320dp"
@@ -102,31 +121,17 @@
 
         <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="40dp">
-
-            <TextView
-                    android:id="@+id/timerView"
-                    android:text="00:00"
-                    android:layout_margin="3dp"
-                    android:textColor="#FFFFFF"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                android:layout_height="match_parent">
 
 
             <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_below="@+id/timerView">
+                    android:layout_height="match_parent">
 
                 <ImageView
                         android:id="@+id/imageView"
                         android:layout_width="wrap_content"
+                        android:padding="80dp"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_size_0_index_2"
                         android:layout_centerInParent="true"/>
