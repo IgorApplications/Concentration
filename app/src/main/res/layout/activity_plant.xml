@@ -131,7 +131,7 @@
                 <ImageView
                         android:id="@+id/imageView"
                         android:layout_width="wrap_content"
-                        android:padding="80dp"
+                        android:padding="70dp"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_size_0_index_2"
                         android:layout_centerInParent="true"/>
