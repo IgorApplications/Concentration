@@ -3,51 +3,78 @@ package com.iapp.concentration.activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.*;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.iapp.concentration.R;
 import com.iapp.concentration.util.DataController;
+import com.iapp.concentration.util.Task;
+import com.iapp.concentration.views.TaskAdapter;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class MainActivity extends AppCompatActivity {
+public class TomorrowActivity extends AppCompatActivity {
 
-    private static final String[] MONTH = new String[] {"ЯНВАРЬ", "ФЕВРАЛЬ", "МАРТ", "АПРЕЛЬ", "МАЙ", "ИЮНЬ", "ИЮЛЬ", "АВГУСТ", "СЕНТЯБРЬ", "ОКТЯБРЬ", "НОЯБРЬ", "ДЕКАБРЬ"};
+    private final android.os.Handler handler = new android.os.Handler();
+    private static final String[] MONTH = new String[] {"ЯНВАРЯ", "ФЕВРАЛЯ", "МАРТА", "АПРЕЛЯ", "МАЯ", "ИЮНЯ", "ИЮЛЯ", "АВГУСТА", "СЕНТЯБРЯ", "ОКТЯБРЯ", "НОЯБРЯ", "ДЕКАБРЯ"};
     private static final String[] DAY_WEEK = new String[]{"Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"};
+    private RecyclerView recyclerView;
+    private TaskAdapter adapter;
+    private List<Task> localTasks;
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
+    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_tomorrow);
 
         LinearLayout header = findViewById(R.id.header);
         header.setAlpha(0f);
         header.animate().alpha(1f).setDuration(500);
 
-        AppCompatButton filterToday = findViewById(R.id.filterToday);
-        AppCompatButton filterTomorrow = findViewById(R.id.filterTomorrow);
-        AppCompatButton filterMonth = findViewById(R.id.filterMonth);
+        // -----------------------------------------------------------------------
+        localTasks = DataController.getInstance(this).getCopyTasks();
+
+        RecyclerView recyclerView = findViewById(R.id.taskList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        filterTasksForDay(localTasks, tomorrow);
+
+        adapter = new TaskAdapter(localTasks, this::taskClick);
+        recyclerView.setAdapter(adapter);
+        startOverdueChecker();
+        // -----------------------------------------------------------------------
 
         ImageButton calendarButton = findViewById(R.id.calendar);
         ImageButton homeButton = findViewById(R.id.home);
         ImageButton listButton = findViewById(R.id.list);
         ImageButton profileButton = findViewById(R.id.profile);
-        ImageButton concentrationButton = findViewById(R.id.concentrationButton);
+        TextView dayAndMonth = findViewById(R.id.dayAndMonth);
+
+        AppCompatButton filterToday = findViewById(R.id.filterToday);
+        AppCompatButton filterTomorrow = findViewById(R.id.filterTomorrow);
+        AppCompatButton filterMonth = findViewById(R.id.filterMonth);
+
+        dayAndMonth.setText(tomorrow.get(Calendar.DAY_OF_MONTH) + " " + MONTH[tomorrow.get(Calendar.MONTH)]);
         LinearLayout profileTop = findViewById(R.id.topProfile);
-        updateDate();
 
         Consumer<View> filterAnim = view -> {
             view.setPressed(true);
@@ -83,7 +110,16 @@ public class MainActivity extends AppCompatActivity {
             return false;
         };
 
-        Consumer<View> bottomButtonsAnimation = view -> {
+        calendarButton.setOnTouchListener(pressEffect);
+        homeButton.setOnTouchListener(pressEffect);
+        listButton.setOnTouchListener(pressEffect);
+        profileButton.setOnTouchListener(pressEffect);
+        profileTop.setOnTouchListener(pressEffect);
+        filterToday.setOnTouchListener(pressEffect);
+        filterTomorrow.setOnTouchListener(pressEffect);
+        filterMonth.setOnTouchListener(pressEffect);
+
+        BiConsumer<View, Runnable> bottomButtonsAnimation = (view, task) -> {
             view.setPressed(true);
             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
             view.animate().cancel();
@@ -96,7 +132,8 @@ public class MainActivity extends AppCompatActivity {
                             view.animate()
                                     .scaleX(1f)
                                     .scaleY(1f)
-                                    .setDuration(100));
+                                    .setDuration(100))
+                                    .withEndAction(task);
         };
 
         BiConsumer<View, Runnable> circleButtonAnim = (view, task) -> {
@@ -126,16 +163,6 @@ public class MainActivity extends AppCompatActivity {
                     );
         };
 
-        filterToday.setOnTouchListener(pressEffect);
-        filterTomorrow.setOnTouchListener(pressEffect);
-        filterMonth.setOnTouchListener(pressEffect);
-        concentrationButton.setOnTouchListener(pressEffect);
-        calendarButton.setOnTouchListener(pressEffect);
-        homeButton.setOnTouchListener(pressEffect);
-        listButton.setOnTouchListener(pressEffect);
-        profileButton.setOnTouchListener(pressEffect);
-        profileTop.setOnTouchListener(pressEffect);
-
         filterToday.setOnClickListener(v -> {
 
             filterAnim.accept(v);
@@ -148,6 +175,9 @@ public class MainActivity extends AppCompatActivity {
             filterTomorrow.setBackgroundResource(R.drawable.bg_filter_outline);
             filterMonth.setBackgroundResource(R.drawable.bg_filter_outline);
 
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+
         });
         filterTomorrow.setOnClickListener(v -> {
             filterAnim.accept(v);
@@ -159,10 +189,6 @@ public class MainActivity extends AppCompatActivity {
             filterToday.setBackgroundResource(R.drawable.bg_filter_outline);
             filterTomorrow.setBackgroundResource(R.drawable.bg_filter_today);
             filterMonth.setBackgroundResource(R.drawable.bg_filter_outline);
-
-            Intent intent = new Intent(this, TomorrowActivity.class);
-            startActivity(intent);
-
         });
         filterMonth.setOnClickListener(v -> {
             filterAnim.accept(v);
@@ -179,20 +205,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        concentrationButton.setOnClickListener(v -> circleButtonAnim.accept(v, () -> goToPlant(v)));
-        profileTop.setOnClickListener(v -> {
-            v.setPressed(true);
-            v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-            v.animate().cancel();
-            v.animate()
-                    .setInterpolator(new DecelerateInterpolator())
-                    .scaleX(0.9f)
-                    .scaleY(0.9f)
-                    .setDuration(120)
-                    .withEndAction(() ->
-                            v.animate().scaleX(1f).scaleY(1f).setDuration(120)
-                    );
-        });
+        Context context = this;
         homeButton.setOnClickListener(v -> {
             v.setPressed(true);
             v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
@@ -212,91 +225,91 @@ public class MainActivity extends AppCompatActivity {
                                                     .scaleX(1f)
                                                     .scaleY(1f)
                                                     .setDuration(120)
+                                                    .withEndAction(() -> {
+                                                        Intent intent = new Intent(context, MainActivity.class);
+                                                        startActivity(intent);
+                                                    })
                                     )
                     );
 
         });
-        calendarButton.setOnClickListener(bottomButtonsAnimation::accept);
-        Context context = this;
+        calendarButton.setOnClickListener(v -> bottomButtonsAnimation.accept(v, () -> {}));
         listButton.setOnClickListener(v -> {
-            /*
-            MotionLayout motion = findViewById(R.id.bottomMenu);
-            motion.transitionToEnd();
-            v.postDelayed(() -> startActivity(new Intent(context, ListActivity.class)), 350);
-             */
-
-            Intent intent = new Intent(this, ListActivity.class);
-            startActivity(intent);
+            bottomButtonsAnimation.accept(v, () -> {
+                Intent intent = new Intent(context, ListActivity.class);
+                startActivity(intent);
+            });
         });
-        profileButton.setOnClickListener(bottomButtonsAnimation::accept);
-
-        showNameDialog();
+        profileButton.setOnClickListener(v -> bottomButtonsAnimation.accept(v, () -> {}));
+        profileTop.setOnClickListener(v -> {
+            v.setPressed(true);
+            v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+            v.animate().cancel();
+            v.animate()
+                    .setInterpolator(new DecelerateInterpolator())
+                    .scaleX(0.9f)
+                    .scaleY(0.9f)
+                    .setDuration(120)
+                    .withEndAction(() ->
+                            v.animate().scaleX(1f).scaleY(1f).setDuration(120)
+                    );
+        });
     }
 
-    public void goToPlant(View view) {
-        int[] location = new int[2];
-        view.getLocationOnScreen(location);
+    private void startOverdueChecker(){
 
-        Intent intent = new Intent(this, PlantActivity.class);
+        Runnable runnable = new Runnable(){
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void run(){
 
-        intent.putExtra("cx", location[0]);
-        intent.putExtra("cy", location[1]);
+                if(adapter != null) {
+                    adapter.notifyDataSetChanged();
+                }
 
-        startActivity(intent);
-        overridePendingTransition(0,0);
-    }
-    private void updateDate() {
-        TextView dayWeekView = findViewById(R.id.dayWeek);
-        TextView dayMonthView = findViewById(R.id.dayMonth);
-        TextView monthView = findViewById(R.id.month);
+                handler.postDelayed(this, 30000); // каждые 30 секунд
+            }
+        };
 
-        Calendar calendar = new GregorianCalendar();
-        dayWeekView.setText(DAY_WEEK[(calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7]);
-        dayMonthView.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-        monthView.setText(MONTH[calendar.get(Calendar.MONTH)]);
+        handler.post(runnable);
     }
 
-    @SuppressLint("SetTextI18n")
-    private void showNameDialog() {
+    private void filterTasksForDay(List<Task> tasks, Calendar day) {
+        Calendar startCal = (Calendar) day.clone();
+        startCal.set(Calendar.HOUR_OF_DAY, 0);
+        startCal.set(Calendar.MINUTE, 0);
+        startCal.set(Calendar.SECOND, 0);
+        startCal.set(Calendar.MILLISECOND, 0);
+        long startOfDay = startCal.getTimeInMillis();
 
-        TextView greetingsView = findViewById(R.id.greetings);
+        Calendar endCal = (Calendar) startCal.clone();
+        endCal.add(Calendar.DAY_OF_MONTH, 1);
+        long endOfDay = endCal.getTimeInMillis();
 
-        String name = DataController.getInstance(this).getUserName();
-        if (!name.equals("")) {
-            greetingsView.setText("Приветствую, " + name + "!");
-            return;
-        }
+        tasks.removeIf(task -> task.date < startOfDay || task.date >= endOfDay);
+    }
 
-        EditText editText = new EditText(this);
-        editText.setHint("Введите имя");
-        editText.setPadding(40,20,40,20);
-        editText.setText("X");
+    @SuppressLint("NotifyDataSetChanged")
+    private void taskClick(Task task){
 
-        LinearLayout container = new LinearLayout(this);
-        container.setPadding(60,20,60,0);
-        container.addView(editText);
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.CustomDialog)
+                .setTitle(task.name)
+                .setItems(new String[]{"Выполнено","Удалить"},(d,which)->{
 
-        AlertDialog alertDialog =
-                new AlertDialog.Builder(this, R.style.CustomDialog)
-                        .setTitle("Укажите имя")
-                        .setMessage("Введите имя, которое будет отображаться в приложении")
-                        .setView(container)
-                        .setNegativeButton("Отмена", null)
-                        .setPositiveButton("Принять", (dialog, which) -> {
+                    if (which == 0) {
+                        task.done = true;
+                        DataController.getInstance(this).updateTask(task);
+                    }
 
-                            String newName = editText.getText().toString().trim();
+                    if (which == 1) {
+                        DataController.getInstance(this).removeTask(task);
+                        localTasks.remove(task);
+                    }
 
-                            if(newName.isEmpty()){
-                                Toast.makeText(this,"Имя не может быть пустым",Toast.LENGTH_SHORT).show();
-                                showNameDialog();
-                                return;
-                            }
+                    adapter.notifyDataSetChanged();
 
-                            DataController.getInstance(this).saveUserName(newName);
-                            greetingsView.setText("Приветствую, " + newName + "!");
+                }).create();
 
-                        })
-                        .create();
-        alertDialog.show();
+        dialog.show();
     }
 }

@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -20,11 +18,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import com.iapp.concentration.R;
-import com.iapp.concentration.util.KeySettings;
+import com.iapp.concentration.util.DataController;
 import com.iapp.concentration.views.TimerCircleView;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class PlantActivity extends AppCompatActivity {
 
@@ -65,8 +62,6 @@ public class PlantActivity extends AppCompatActivity {
     private long pauseTimestamp = 0;
     private long generalTime;
     private long startTime;
-
-    private SharedPreferences sharedPreferences;
 
     private TimerCircleView timerCircle;
 
@@ -316,9 +311,8 @@ public class PlantActivity extends AppCompatActivity {
         profileTop.setOnTouchListener(pressEffect);
         tuneButton.setOnTouchListener(pressEffect);
 
-        sharedPreferences = getSharedPreferences(KeySettings.FILE_NAME, MODE_PRIVATE);
         TextView greetingsView = findViewById(R.id.greetings);
-        String name = sharedPreferences.getString(KeySettings.APPLICATION_NAME, "");
+        String name = DataController.getInstance(this).getUserName();
         if (!name.equals("")) {
             greetingsView.setText("Приветствую, " + name + "!");
             return;

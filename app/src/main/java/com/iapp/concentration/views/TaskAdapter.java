@@ -1,4 +1,4 @@
-package com.iapp.concentration.util;
+package com.iapp.concentration.views;
 
 import android.annotation.SuppressLint;
 import android.view.*;
@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.iapp.concentration.R;
+import com.iapp.concentration.util.Task;
 
 import java.util.Calendar;
 import java.util.List;
@@ -18,11 +19,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.Holder>{
 
     private final List<Task> tasks;
     private final Consumer<Task> click;
+    private Calendar now;
 
 
     public TaskAdapter(List<Task> tasks, Consumer<Task> click){
         this.tasks = tasks;
         this.click = click;
+        now = Calendar.getInstance();
+    }
+
+    public void updateNow(Calendar now) {
+        this.now = now;
     }
 
     class Holder extends RecyclerView.ViewHolder{
@@ -67,8 +74,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.Holder>{
                         task.hour,
                         task.minute)
         );
-
-        Calendar now = Calendar.getInstance();
 
         Calendar taskTime = Calendar.getInstance();
         taskTime.setTimeInMillis(task.date);

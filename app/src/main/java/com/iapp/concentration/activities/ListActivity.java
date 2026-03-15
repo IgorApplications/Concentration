@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,17 +13,14 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.iapp.concentration.R;
+import com.iapp.concentration.util.DataController;
 import com.iapp.concentration.util.Task;
-import com.iapp.concentration.util.TaskAdapter;
+import com.iapp.concentration.views.TaskAdapter;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -36,11 +33,8 @@ public class ListActivity extends AppCompatActivity {
     private final android.os.Handler handler = new android.os.Handler();
     private static final String[] MONTH = new String[] {"ЯНВАРЯ", "ФЕВРАЛЯ", "МАРТА", "АПРЕЛЯ", "МАЯ", "ИЮНЯ", "ИЮЛЯ", "АВГУСТА", "СЕНТЯБРЯ", "ОКТЯБРЯ", "НОЯБРЯ", "ДЕКАБРЯ"};
     private static final String[] DAY_WEEK = new String[]{"Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"};
-    private RecyclerView recyclerView;
-    private List<Task> tasks = new ArrayList<>();
     private TaskAdapter adapter;
-    private SharedPreferences prefs;
-    private static final String KEY = "TASKS";
+    private List<Task> localTasks;
 
     @Override
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
@@ -49,16 +43,19 @@ public class ListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list);
 
         // -----------------------------------------------------------------------
+        localTasks = DataController.getInstance(this).getCopyTasks();
+
         RecyclerView recyclerView = findViewById(R.id.taskList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        prefs = getSharedPreferences("tasks", MODE_PRIVATE);
-        loadTasks();
-        removeOldTasks();
-        adapter = new TaskAdapter(tasks, this::taskClick);
+
+        Calendar today = Calendar.getInstance();
+        //tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        filterTasksForDay(localTasks, today);
+
+        adapter = new TaskAdapter(localTasks, this::taskClick);
         recyclerView.setAdapter(adapter);
         startOverdueChecker();
-
         // -----------------------------------------------------------------------
 
         ImageButton calendarButton = findViewById(R.id.calendar);
@@ -68,8 +65,7 @@ public class ListActivity extends AppCompatActivity {
         ImageButton addTaskButton = findViewById(R.id.addTask);
         TextView dayAndMonth = findViewById(R.id.dayAndMonth);
 
-        Calendar calendar = new GregorianCalendar();
-        dayAndMonth.setText(calendar.get(Calendar.DAY_OF_MONTH) + " " + MONTH[calendar.get(Calendar.MONTH)]);
+        dayAndMonth.setText(today.get(Calendar.DAY_OF_MONTH) + " " + MONTH[today.get(Calendar.MONTH)]);
         LinearLayout profileTop = findViewById(R.id.topProfile);
 
         Consumer<View> filterAnim = view -> {
@@ -177,14 +173,7 @@ public class ListActivity extends AppCompatActivity {
                                                     .scaleX(1f)
                                                     .scaleY(1f)
                                                     .setDuration(120)
-                                                    .withEndAction(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-
-                                                            Intent intent = new Intent(context, MainActivity.class);
-                                                            startActivity(intent);
-                                                        }
-                                                    })
+                                                    .withEndAction(this::finish)
                                     )
                     );
 
@@ -210,10 +199,11 @@ public class ListActivity extends AppCompatActivity {
     private void startOverdueChecker(){
 
         Runnable runnable = new Runnable(){
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void run(){
 
-                if(adapter != null){
+                if(adapter != null) {
                     adapter.notifyDataSetChanged();
                 }
 
@@ -268,12 +258,9 @@ public class ListActivity extends AppCompatActivity {
                     task.minute = minute;
                     task.done = false;
 
-                    task.date = System.currentTimeMillis();
-
-
-                    tasks.add(task);
-
-                    saveTasks();
+                    task.date = task.date = System.currentTimeMillis();
+                    DataController.getInstance(this).addNewTask(task);
+                    localTasks.add(task);
 
                     adapter.notifyDataSetChanged();
 
@@ -286,31 +273,20 @@ public class ListActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void removeOldTasks(){
+    private void filterTasksForDay(List<Task> tasks, Calendar day) {
+        Calendar startCal = (Calendar) day.clone();
+        startCal.set(Calendar.HOUR_OF_DAY, 0);
+        startCal.set(Calendar.MINUTE, 0);
+        startCal.set(Calendar.SECOND, 0);
+        startCal.set(Calendar.MILLISECOND, 0);
+        long startOfDay = startCal.getTimeInMillis();
 
-        Calendar today = Calendar.getInstance();
+        Calendar endCal = (Calendar) startCal.clone();
+        endCal.add(Calendar.DAY_OF_MONTH, 1);
+        long endOfDay = endCal.getTimeInMillis();
 
-        today.set(Calendar.HOUR_OF_DAY,0);
-        today.set(Calendar.MINUTE,0);
-        today.set(Calendar.SECOND,0);
-        today.set(Calendar.MILLISECOND,0);
-
-        long startOfToday = today.getTimeInMillis();
-
-        List<Task> filtered = new ArrayList<>();
-
-        for(Task task : tasks){
-            if(task.date >= startOfToday){
-                filtered.add(task);
-            }
-        }
-
-        tasks.clear();
-        tasks.addAll(filtered);
+        tasks.removeIf(task -> task.date < startOfDay || task.date >= endOfDay);
     }
-
-
-
 
     @SuppressLint("NotifyDataSetChanged")
     private void taskClick(Task task){
@@ -319,37 +295,20 @@ public class ListActivity extends AppCompatActivity {
                 .setTitle(task.name)
                 .setItems(new String[]{"Выполнено","Удалить"},(d,which)->{
 
-                    if(which==0){
+                    if (which == 0) {
                         task.done = true;
+                        DataController.getInstance(this).updateTask(task);
                     }
 
-                    if(which==1){
-                        tasks.remove(task);
+                    if (which == 1) {
+                        DataController.getInstance(this).removeTask(task);
+                        localTasks.remove(task);
                     }
 
-                    saveTasks();
                     adapter.notifyDataSetChanged();
 
                 }).create();
 
         dialog.show();
-    }
-
-
-    private void saveTasks(){
-        SharedPreferences.Editor editor = prefs.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(tasks);
-        editor.putString(KEY,json);
-        editor.apply();
-    }
-
-    private void loadTasks(){
-        Gson gson = new Gson();
-        String json = prefs.getString(KEY,null);
-        if (json!=null) {
-            Type type = new TypeToken<ArrayList<Task>>(){}.getType();
-            tasks = gson.fromJson(json,type);
-        }
     }
 }
