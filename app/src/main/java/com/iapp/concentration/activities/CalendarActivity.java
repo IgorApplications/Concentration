@@ -291,7 +291,19 @@ public class CalendarActivity extends AppCompatActivity {
             arrowAnimation(v);
 
             currentCalendar.add(Calendar.MONTH,-1);
+
+            if (selectedDay != -1) {
+                Calendar dayFilter = (Calendar) currentCalendar.clone();
+                dayFilter.set(Calendar.DAY_OF_MONTH, selectedDay);
+
+                List<Task> startTasks = DataController.getInstance(this).getCopyTasks();
+                filterTasksForDay(startTasks, dayFilter);
+
+                localTasks.clear();
+                localTasks.addAll(startTasks);
+            }
             refreshCalendar();
+            taskAdapter.notifyDataSetChanged();
 
         });
 
@@ -300,8 +312,19 @@ public class CalendarActivity extends AppCompatActivity {
             arrowAnimation(v);
 
             currentCalendar.add(Calendar.MONTH,1);
-            refreshCalendar();
 
+            if (selectedDay != -1) {
+                Calendar dayFilter = (Calendar) currentCalendar.clone();
+                dayFilter.set(Calendar.DAY_OF_MONTH, selectedDay);
+
+                List<Task> startTasks = DataController.getInstance(this).getCopyTasks();
+                filterTasksForDay(startTasks, dayFilter);
+
+                localTasks.clear();
+                localTasks.addAll(startTasks);
+            }
+            refreshCalendar();
+            taskAdapter.notifyDataSetChanged();
         });
 
         LinearLayout createButton = findViewById(R.id.createButton);
